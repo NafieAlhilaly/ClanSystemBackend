@@ -1,0 +1,18 @@
+version: '3'
+services:
+  backend:
+    container_name: web
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on: [mongodb]
+    ports:
+      - "5224:5224"
+  mongodb:
+    image: mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - dbdata6:/data/db
+volumes:
+  dbdata6:
