@@ -6,13 +6,19 @@ services:
       context: .
       dockerfile: Dockerfile
     depends_on: [mongodb]
+    environment:
+      - DB_URL=mongodb:27017
     ports:
       - "5224:5224"
+    networks:
+      - network-1
   mongodb:
     image: mongo
     ports:
       - '27017:27017'
-    volumes:
-      - dbdata6:/data/db
-volumes:
-  dbdata6:
+    networks:
+      - network-1
+
+networks:
+  network-1:
+    name: network-1
