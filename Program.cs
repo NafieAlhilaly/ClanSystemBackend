@@ -2,13 +2,11 @@ using MongoDB.Driver;
 using System.Net;
 using AppLogger;
 using API.Auth;
-using API.Clan.Info;
-using API.Clan.Join;
-using API.Clan.Leave;
-using API.Clan.PointsS;
-using Schema.Clan;
-using Schema.User;
-using MongoDB.Bson.Serialization;
+using Models;
+using API.ClanInfo;
+using API.ClanJoin;
+using API.ClanLeave;
+using API.ClanPoints;
 
 
 
@@ -22,15 +20,15 @@ builder.Logging.AddConsole();
 WebApplication app = builder.Build();
 IMongoDatabase database = Database.Database.MongoDatabase();
 ILogger logger = Logger.GetLogger();
-var UserDocument = database.GetCollection<UserSchema>("user");
-var ClanDocument = database.GetCollection<ClanSchema>("clan");
+var UserDocument = database.GetCollection<User>("user");
+var ClanDocument = database.GetCollection<Clan>("clan");
 
-using (StreamReader r = new StreamReader("clans.json"))
-{
-    string json = r.ReadToEnd();
-    List<ClanSchema> rawQuery = BsonSerializer.Deserialize<List<ClanSchema>>(json);
-    ClanDocument.InsertMany(rawQuery);
-}
+// using (StreamReader r = new StreamReader("clans.json"))
+// {
+//     string json = r.ReadToEnd();
+//     List<Clan> rawQuery = BsonSerializer.Deserialize<List<Clan>>(json);
+//     ClanDocument.InsertMany(rawQuery);
+// }
 
 app.UseCors(CorsMiddlewareName);
 app.UseWhen(context => context.Request.Path.StartsWithSegments("/clan"), appBuilder =>
@@ -44,7 +42,7 @@ app.UseWhen(context => context.Request.Path.StartsWithSegments("/clan"), appBuil
             return;
         }
         string username = context.Request.Headers.Authorization.ToString();
-        long count = await UserDocument.CountDocumentsAsync(Builders<UserSchema>.Filter.Eq("name", username));
+        long count = await UserDocument.CountDocumentsAsync(Builders<User>.Filter.Eq("name", username));
         if (count == 0)
         {
             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
