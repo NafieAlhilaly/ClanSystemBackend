@@ -17,8 +17,7 @@ namespace API.ClanLeave
             {
                 User userData = UserCollection.Find(Builders<User>.Filter.Eq("name", request.Headers.Authorization.ToString())).First();
                 Dictionary<string, object?> res = [];
-                long count = await ClanCollection.CountDocumentsAsync(Builders<Clan>.Filter.Eq("_id", new ObjectId(userData.clanId)));
-                if (count == 0)
+                if (userData.clanId == null)
                 {
                     response.StatusCode = (int)HttpStatusCode.NotFound;
                     res.Add("error", "You are not part of any clan.");
